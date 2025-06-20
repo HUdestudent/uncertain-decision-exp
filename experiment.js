@@ -5,78 +5,99 @@ const ctx = canvas.getContext("2d");
 let trial = 0;
 const totalTrials = 5;
 const gridSize = 5;
-const boxSize = 90;
+const blockSize = 80;
 let revealed = [];
 let colors = [];
-let startTime;
-let data = [];
+let trialData = [];
+let decisionStartTime;
+
+function updateProgress() {
+  document.getElementById("progress").innerText = `第 ${trial + 1} / ${totalTrials} 轮`;
+}
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < 25; i++) {
-    const row = Math.floor(i / gridSize);
-    const col = i % gridSize;
-    const x = col * 100 + 10;
-    const y = row * 100 + 10;
-    ctx.fillStyle = revealed.includes(i) ? colors[i] : "#ccc";
-    ctx.fillRect(x, y, boxSize, boxSize);
+    let row = Math.floor(i / gridSize);
+    let col = i % gridSize;
+    let x = col * 95 + 10;
+    let y = row * 95 + 10;
+    ctx.fillStyle = revealed.includes(i) ? colors[i] : "#aaaaaa";
+    ctx.fillRect(x, y, blockSize, blockSize);
     ctx.strokeStyle = "#fff";
-    ctx.strokeRect(x, y, boxSize, boxSize);
+    ctx.strokeRect(x, y, blockSize, blockSize);
   }
 }
 
 function startTrial() {
-  document.getElementById("choiceArea").style.display = "none";
+  updateProgress();
+  document.getElementById("colorChoice").style.display = "flex";
   document.getElementById("confidenceArea").style.display = "none";
-  const colorA = "#e74c3c"; // red
-  const colorB = "#27ae60"; // green
-  colors = new Array(25).fill(colorA);
+  document.getElementById("resultBlock").innerHTML = "";
+
+  document.getElementById("redBlock").classList.remove("highlight");
+  document.getElementById("blueBlock").classList.remove("highlight");
+
+  const red = "#ff4d4d";
+  const blue = "#4d6dff";
+  colors = new Array(25).fill(red);
   const numReveal = Math.floor(Math.random() * 15) + 5;
-  const idx = [...Array(25).keys()].sort(() => 0.5 - Math.random()).slice(0, numReveal);
-  const bCount = Math.floor(Math.random() * numReveal);
-  for (let i = 0; i < bCount; i++) colors[idx[i]] = colorB;
-  revealed = idx;
+  let indices = [...Array(25).keys()].sort(() => 0.5 - Math.random()).slice(0, numReveal);
+  const blueCount = Math.floor(Math.random() * numReveal);
+  for (let i = 0; i < blueCount; i++) colors[indices[i]] = blue;
+  revealed = indices;
   drawGrid();
-  startTime = performance.now();
-  canvas.onclick = () => {
-    canvas.onclick = null;
-    document.getElementById("choiceArea").style.display = "block";
-  };
+
+  decisionStartTime = performance.now();
 }
 
-function makeChoice(choice) {
-  const rt = ((performance.now() - startTime) / 1000).toFixed(2);
-  document.getElementById("choiceArea").style.display = "none";
+function recordDecision(choice) {
+  const rt = ((performance.now() - decisionStartTime) / 1000).toFixed(2);
+  document.getElementById("colorChoice").style.display = "none";
   document.getElementById("confidenceArea").style.display = "block";
-  data.push({
+
+  if (choice === '红色') {
+    document.getElementById("redBlock").classList.add("highlight");
+  } else {
+    document.getElementById("blueBlock").classList.add("highlight");
+  }
+
+  document.getElementById("resultBlock").innerHTML = `你选择的是：<span style="color:${choice === '红色' ? '#ff4d4d' : '#4d6dff'}">${choice}</span>`;
+
+  const redCount = revealed.filter(i => colors[i] === "#ff4d4d").length;
+  const blueCount = revealed.filter(i => colors[i] === "#4d6dff").length;
+
+  trialData.push({
     trial: trial + 1,
-    red: revealed.filter(i => colors[i] === "#e74c3c").length,
-    green: revealed.filter(i => colors[i] === "#27ae60").length,
+    red: redCount,
+    blue: blueCount,
+    decision: choice,
     rt: rt,
-    choice: choice,
     confidence: null
   });
 }
 
-function selectConfidence(val) {
-  data[trial].confidence = val;
+function recordConfidence(score) {
+  trialData[trial].confidence = score;
   trial++;
   document.getElementById("confidenceArea").style.display = "none";
+
   if (trial < totalTrials) {
     startTrial();
   } else {
     document.getElementById("downloadArea").style.display = "block";
-    alert("实验结束，请下载结果。");
+    document.getElementById("progress").innerText = "实验完成！";
+    alert("实验完成！你可以下载结果。");
   }
 }
 
 function downloadCSV() {
-  const headers = "Trial,Red,Green,RT,Choice,Confidence\n";
-  const rows = data.map(d => [d.trial, d.red, d.green, d.rt, d.choice, d.confidence].join(",")).join("\n");
-  const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+  let header = "Trial,Red,Blue,Decision,RT,Confidence\n";
+  let rows = trialData.map(d => [d.trial, d.red, d.blue, d.decision, d.rt, d.confidence].join(",")).join("\n");
+  const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "colored_decision_results.csv";
+  link.download = "colorblock_progress_data.csv";
   link.click();
 }
 

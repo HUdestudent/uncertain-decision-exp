@@ -3,77 +3,100 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>不确定二元颜色判断任务</title>
+  <title>颜色判断任务（进度显示）</title>
   <style>
     body {
       font-family: "Helvetica Neue", sans-serif;
-      background: #f0f2f5;
+      background: #f5f7fa;
       text-align: center;
-      padding: 20px;
       margin: 0;
+      padding: 20px;
     }
     h2 {
-      margin-top: 10px;
-      color: #333;
+      color: #222;
     }
-    #experimentCanvas {
-      background: #fff;
-      margin: 20px auto;
-      display: block;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .btn {
-      padding: 10px 20px;
-      margin: 10px;
+    #progress {
+      margin: 10px 0;
       font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
+      color: #444;
     }
-    .btn:hover {
-      background-color: #45a049;
+    canvas {
+      background: #ddd;
+      margin-top: 10px;
+      border-radius: 12px;
     }
-    .confidence-area, .choice-area, .download-area {
+    .color-choice {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
       margin-top: 20px;
     }
-    .confidence-area button {
+    .color-block {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 3px solid transparent;
+    }
+    .color-block:hover {
+      border-color: #333;
+    }
+    .highlight {
+      border-color: black !important;
+    }
+    .confidence {
+      margin-top: 30px;
+    }
+    .confidence button {
       margin: 5px;
       padding: 8px 16px;
-      font-size: 14px;
+      font-size: 16px;
       border-radius: 6px;
+      border: 1px solid #ccc;
     }
-    .note {
-      font-size: 14px;
-      color: #666;
-      margin-top: 10px;
+    #resultBlock {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .download {
+      margin-top: 30px;
+    }
+    .btn {
+      font-size: 16px;
+      padding: 10px 20px;
+      background: #007bff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h2>不确定二元颜色判断任务</h2>
+  <h2>哪种颜色的方块可能更多？</h2>
+  <div id="progress">第 1 / 5 轮</div>
   <canvas id="experimentCanvas" width="500" height="500"></canvas>
 
-  <div class="choice-area" id="choiceArea" style="display:none;">
-    <p>哪种颜色的方块可能更多？</p>
-    <button class="btn" onclick="makeChoice('红色')">红色更多</button>
-    <button class="btn" onclick="makeChoice('绿色')">绿色更多</button>
+  <div class="color-choice" id="colorChoice">
+    <div class="color-block" id="redBlock" style="background:#ff4d4d;" onclick="recordDecision('红色')"></div>
+    <div class="color-block" id="blueBlock" style="background:#4d6dff;" onclick="recordDecision('蓝色')"></div>
   </div>
 
-  <div class="confidence-area" id="confidenceArea" style="display:none;">
-    <p>您对判断的信度是？</p>
-    <button onclick="selectConfidence(0.5)">0.5</button>
-    <button onclick="selectConfidence(0.6)">0.6</button>
-    <button onclick="selectConfidence(0.7)">0.7</button>
-    <button onclick="selectConfidence(0.8)">0.8</button>
-    <button onclick="selectConfidence(0.9)">0.9</button>
-    <button onclick="selectConfidence(1.0)">1.0</button>
-    <div class="note">0.5 表示猜测，1.0 表示非常确定</div>
+  <div id="resultBlock"></div>
+
+  <div class="confidence" id="confidenceArea" style="display:none;">
+    <p>你对判断的信度是？</p>
+    <button onclick="recordConfidence(0.5)">0.5</button>
+    <button onclick="recordConfidence(0.6)">0.6</button>
+    <button onclick="recordConfidence(0.7)">0.7</button>
+    <button onclick="recordConfidence(0.8)">0.8</button>
+    <button onclick="recordConfidence(0.9)">0.9</button>
+    <button onclick="recordConfidence(1.0)">1.0</button>
+    <div style="font-size: 13px; color: #666;">0.5 表示猜测，1.0 表示非常确定</div>
   </div>
 
-  <div class="download-area" id="downloadArea" style="display:none;">
-    <button class="btn" onclick="downloadCSV()">下载结果 CSV</button>
+  <div class="download" id="downloadArea" style="display:none;">
+    <button class="btn" onclick="downloadCSV()">下载实验数据</button>
   </div>
 
   <script src="experiment.js"></script>
