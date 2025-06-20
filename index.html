@@ -1,18 +1,22 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Uncertain Color Decision Task</title>
+  <title>不确定颜色判断实验</title>
   <style>
-    canvas { background: #ccc; display: block; margin: 0 auto; }
-    #confidence { text-align: center; margin-top: 20px; display: none; }
-    button { font-size: 16px; margin: 0 5px; }
+    body { font-family: sans-serif; text-align: center; background: #eee; margin: 0; padding: 20px; }
+    canvas { background: #ccc; margin: 20px auto; display: block; }
+    #confidence, #resultArea { margin-top: 20px; }
+    button { font-size: 16px; margin: 5px; padding: 5px 15px; }
+    #download { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <canvas id="experimentCanvas" width="600" height="600"></canvas>
-  <div id="confidence">
+  <h2>不确定二元颜色判断任务</h2>
+  <canvas id="experimentCanvas" width="500" height="500"></canvas>
+
+  <div id="confidence" style="display:none;">
     <p>你对刚才判断的信度有多高？（点击选择）</p>
     <button onclick="selectConfidence(0.5)">0.5</button>
     <button onclick="selectConfidence(0.6)">0.6</button>
@@ -20,7 +24,15 @@
     <button onclick="selectConfidence(0.8)">0.8</button>
     <button onclick="selectConfidence(0.9)">0.9</button>
     <button onclick="selectConfidence(1.0)">1.0</button>
+    <p style="font-size: 14px; color: #444; margin-top: 10px;">
+      0.5 表示完全猜测，1.0 表示非常确定，你的信度将用于后续分析。
+    </p>
   </div>
+
+  <div id="resultArea" style="display:none;">
+    <button onclick="downloadCSV()">下载实验结果 CSV</button>
+  </div>
+
   <script src="experiment.js"></script>
 </body>
 </html>
