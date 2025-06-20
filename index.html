@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Uncertain Color Decision Task</title>
+  <style>
+    canvas { background: #ccc; display: block; margin: 0 auto; }
+    #confidence { text-align: center; margin-top: 20px; display: none; }
+    button { font-size: 16px; margin: 0 5px; }
+  </style>
+</head>
+<body>
+  <canvas id="experimentCanvas" width="600" height="600"></canvas>
+  <div id="confidence">
+    <p>你对刚才判断的信度有多高？（点击选择）</p>
+    <button onclick="selectConfidence(0.5)">0.5</button>
+    <button onclick="selectConfidence(0.6)">0.6</button>
+    <button onclick="selectConfidence(0.7)">0.7</button>
+    <button onclick="selectConfidence(0.8)">0.8</button>
+    <button onclick="selectConfidence(0.9)">0.9</button>
+    <button onclick="selectConfidence(1.0)">1.0</button>
+  </div>
+  <script src="experiment.js"></script>
+</body>
+</html>
+    
