@@ -3,37 +3,79 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>不确定颜色判断实验</title>
+  <title>不确定二元颜色判断任务</title>
   <style>
-    body { font-family: sans-serif; text-align: center; background: #eee; margin: 0; padding: 20px; }
-    canvas { background: #ccc; margin: 20px auto; display: block; }
-    #confidence, #resultArea { margin-top: 20px; }
-    button { font-size: 16px; margin: 5px; padding: 5px 15px; }
-    #download { margin-top: 20px; }
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background: #f0f2f5;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    h2 {
+      margin-top: 10px;
+      color: #333;
+    }
+    #experimentCanvas {
+      background: #fff;
+      margin: 20px auto;
+      display: block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .btn {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+    }
+    .btn:hover {
+      background-color: #45a049;
+    }
+    .confidence-area, .choice-area, .download-area {
+      margin-top: 20px;
+    }
+    .confidence-area button {
+      margin: 5px;
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 6px;
+    }
+    .note {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <h2>不确定二元颜色判断任务</h2>
   <canvas id="experimentCanvas" width="500" height="500"></canvas>
 
-  <div id="confidence" style="display:none;">
-    <p>你对刚才判断的信度有多高？（点击选择）</p>
+  <div class="choice-area" id="choiceArea" style="display:none;">
+    <p>哪种颜色的方块可能更多？</p>
+    <button class="btn" onclick="makeChoice('红色')">红色更多</button>
+    <button class="btn" onclick="makeChoice('绿色')">绿色更多</button>
+  </div>
+
+  <div class="confidence-area" id="confidenceArea" style="display:none;">
+    <p>您对判断的信度是？</p>
     <button onclick="selectConfidence(0.5)">0.5</button>
     <button onclick="selectConfidence(0.6)">0.6</button>
     <button onclick="selectConfidence(0.7)">0.7</button>
     <button onclick="selectConfidence(0.8)">0.8</button>
     <button onclick="selectConfidence(0.9)">0.9</button>
     <button onclick="selectConfidence(1.0)">1.0</button>
-    <p style="font-size: 14px; color: #444; margin-top: 10px;">
-      0.5 表示完全猜测，1.0 表示非常确定，你的信度将用于后续分析。
-    </p>
+    <div class="note">0.5 表示猜测，1.0 表示非常确定</div>
   </div>
 
-  <div id="resultArea" style="display:none;">
-    <button onclick="downloadCSV()">下载实验结果 CSV</button>
+  <div class="download-area" id="downloadArea" style="display:none;">
+    <button class="btn" onclick="downloadCSV()">下载结果 CSV</button>
   </div>
 
   <script src="experiment.js"></script>
 </body>
 </html>
-    
